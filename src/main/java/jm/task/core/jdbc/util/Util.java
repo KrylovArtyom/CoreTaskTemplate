@@ -20,7 +20,6 @@ public class Util {
 			System.out.println("драйвер подключен");
 			connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 			System.out.println("Соелинение установлено");
-			connection.setAutoCommit(false);
 		} catch (SQLException e) {
 			System.out.println("Проверь с отображением БД");
 			e.printStackTrace();
