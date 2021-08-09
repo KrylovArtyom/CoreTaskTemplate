@@ -17,15 +17,9 @@ public class Util {
 		Connection connection = null;
 		try{
 			Class.forName(DRIVER);
-			System.out.println("драйвер подключен");
 			connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-			System.out.println("Соелинение установлено");
 			connection.setAutoCommit(false);
-		} catch (SQLException e) {
-			System.out.println("Проверь с отображением БД");
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			System.out.println("Проблема с JDBC");
+		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 		return connection;
