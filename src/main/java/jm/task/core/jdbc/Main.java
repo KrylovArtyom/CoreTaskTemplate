@@ -9,6 +9,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         UserService userService = new UserServiceImpl();
+
         User user1 = new User("Ivan", "Ivanov", (byte) 15);
         User user2 = new User("Pavel", "Pavlov", (byte) 16);
         User user3 = new User("Oleg", "Olegov", (byte) 17);
