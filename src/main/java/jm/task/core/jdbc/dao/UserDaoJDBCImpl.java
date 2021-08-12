@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
-    private static final Connection connection = Util.getMySQLConnection();
-
     public UserDaoJDBCImpl() {
     }
 
@@ -19,15 +17,26 @@ public class UserDaoJDBCImpl implements UserDao {
                             + "lastName VARCHAR(25) NOT NULL, "
                             + "age SMALLINT NOT NULL"
                             + ");";
+        Connection connection = Util.getMySQLConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(createTableSQL)) {
+            connection.setAutoCommit(false);
             preparedStatement.executeUpdate(createTableSQL);
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
+            try {
+                connection.rollback();
+                connection.setAutoCommit(true);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
     public void dropUsersTable() {
-        try (Statement statement = connection.createStatement()) {
+        try (Connection connection = Util.getMySQLConnection();
+                Statement statement = connection.createStatement()) {
+
             statement.execute("DROP TABLE IF EXISTS users");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -36,6 +45,8 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void saveUser(String name, String lastName, byte age) {
         String saveUserSQL = "INSERT INTO users(name, lastName, age) values(?, ?, ?)";
+        Connection connection = Util.getMySQLConnection();
+
         try (PreparedStatement preparedStatement = connection.prepareStatement(saveUserSQL)) {
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
@@ -47,8 +58,13 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("DELETE FROM users WHERE id");
+        String deleteUserByIdSQL = "DELETE FROM users WHERE id";
+
+        try (Connection connection = Util.getMySQLConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(deleteUserByIdSQL)) {
+
+            preparedStatement.execute(deleteUserByIdSQL);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -57,24 +73,28 @@ public class UserDaoJDBCImpl implements UserDao {
     public List<User> getAllUsers() {
         List<User> arrUser = new ArrayList<>();
         String getAllUsersSQL = "SELECT * FROM users";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getAllUsersSQL);
+
+        try (Connection connection = Util.getMySQLConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(getAllUsersSQL);
                 ResultSet resultSet = preparedStatement.executeQuery(getAllUsersSQL)) {
+
             while(resultSet.next()) {
-                User user = new User();
-                user.setId(resultSet.getLong("id"));
-                user.setName(resultSet.getString("name"));
-                user.setLastName(resultSet.getString("lastName"));
-                user.setAge(resultSet.getByte("age"));
+                User user = new User(resultSet.getString("name"),
+                                     resultSet.getString("lastName"),
+                                     resultSet.getByte("age"));
                 arrUser.add(user);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return arrUser;
     }
 
     public void cleanUsersTable() {
-        try (Statement statement = connection.createStatement()) {
+        try (Connection connection = Util.getMySQLConnection();
+                Statement statement = connection.createStatement()) {
+
             statement.execute("TRUNCATE TABLE users");
         } catch (SQLException e) {
             e.printStackTrace();
