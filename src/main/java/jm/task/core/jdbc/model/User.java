@@ -16,7 +16,6 @@ public class User implements Serializable {
     @Column (nullable = false)
     private String lastName;
 
-    @Column
     private Byte age;
 
     public User() {
@@ -68,5 +67,29 @@ public class User implements Serializable {
                 ", lastName = '" + lastName + '\'' +
                 ", age = " + age +
                 ']';
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 37;
+        result = 37 * result + (int)(id - (id >>> 32));
+        result = 37 * result + name.hashCode() + lastName.hashCode();
+        result = 37 * result + (int)age;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (getClass() != obj.getClass())) {
+            return false;
+        }
+        User other = (User) obj;
+        return (id.equals(other.id) &&
+                name.equals(other.name) &&
+                lastName.equals(other.lastName) &&
+                age.equals(other.age));
     }
 }
