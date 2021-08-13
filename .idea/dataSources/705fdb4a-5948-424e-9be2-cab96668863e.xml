@@ -970,49 +970,22 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <Host>localhost</Host>
       <Plugin>caching_sha2_password</Plugin>
     </user>
-    <table id="283" parent="3" name="users"/>
-    <table id="284" parent="7" name="users"/>
-    <column id="285" parent="283" name="id">
-      <Position>1</Position>
-      <DataType>bigint(20)|0s</DataType>
-      <NotNull>1</NotNull>
-      <SequenceIdentity>null</SequenceIdentity>
-    </column>
-    <column id="286" parent="283" name="name">
-      <Position>2</Position>
-      <DataType>varchar(25)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="287" parent="283" name="lastName">
-      <Position>3</Position>
-      <DataType>varchar(25)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="288" parent="283" name="age">
-      <Position>4</Position>
-      <DataType>smallint(6)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <key id="289" parent="283" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>id</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <column id="290" parent="284" name="id">
+    <table id="283" parent="7" name="users"/>
+    <column id="284" parent="283" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="291" parent="284" name="name">
+    <column id="285" parent="283" name="name">
       <Position>2</Position>
       <DataType>varchar(30)|0s</DataType>
     </column>
-    <column id="292" parent="284" name="age">
+    <column id="286" parent="283" name="age">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
     </column>
-    <key id="293" parent="284" name="PRIMARY">
+    <key id="287" parent="283" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>

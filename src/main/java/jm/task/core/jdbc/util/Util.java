@@ -1,14 +1,16 @@
 package jm.task.core.jdbc.util;
 
+import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
+import org.hibernate.service.ServiceRegistry;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class Util {
 	// реализуйте настройку соеденения с БД JDBC
@@ -21,39 +23,40 @@ public class Util {
 
 	public static Connection getMySQLConnection() {
 		Connection connection = null;
-		try{
+		try {
 			Class.forName(DRIVER);
-			System.out.println("драйвер подключен");
 			connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-			System.out.println("Соелинение установлено");
-		} catch (SQLException e) {
-			System.out.println("Проверь с отображением БД");
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			System.out.println("Проблема с JDBC");
+		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 		return connection;
 	}
 
 	//открытие сессии Hibernate
-	private static StandardServiceRegistry registry;
 	private static SessionFactory sessionFactory;
 
 	public static SessionFactory getSessionFactory() {
 		if (sessionFactory == null) {
-			registry = new StandardServiceRegistryBuilder()
-					.configure().build();
-			MetadataSources sources = new MetadataSources(registry);
-			Metadata metadata = sources.getMetadataBuilder().build();
-			sessionFactory = metadata.getSessionFactoryBuilder().build();
+			try {
+				Properties properties = new Properties();
+				properties.put(Environment.DRIVER, DRIVER);
+				properties.put(Environment.USER, USERNAME);
+				properties.put(Environment.PASS, PASSWORD);
+				properties.put(Environment.URL, URL);
+				properties.put(Environment.SHOW_SQL, "true");
+				properties.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+
+				Configuration configuration = new Configuration()
+						.setProperties(properties)
+						.addAnnotatedClass(User.class);
+				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+						.applySettings(configuration.getProperties()).build();
+
+				sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return sessionFactory;
-	}
-
-	public static void shutdown() {
-		if (registry != null) {
-			StandardServiceRegistryBuilder.destroy(registry);
-		}
 	}
 }
